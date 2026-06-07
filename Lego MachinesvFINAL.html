@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V.E.R.I.T.A.S. - FLL Innovation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Rajdhani:wght@400;600;700&family=Russo+One&family=Black+Ops+One&family=Kalam:wght@700&family=Permanent+Marker&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        /* --- MISSION CONTROL AESTHETICS --- */
+        :root {
+            --primary-gold: #D4AF37;
+            --bright-gold: #FFD700;
+            --alert-red: #ff3333; 
+            --success-green: #00FFFF; /* CYAN ALTO CONTRASTE */
+            --tech-blue: #00d2ff; 
+            --deep-bg: #0a0a0a;
+        }
+
+        * { box-sizing: border-box; }
+*, *::before, *::after {
+  animation-delay: 0s !important;
+  animation-play-state: paused !important;
+  animation-fill-mode: forwards !important;
+  transition-duration: 0s !important;
+}
+        body {
+            background-color: #000;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            font-family: 'Rajdhani', sans-serif;
+            color: #eee;
+            overflow-x: hidden;
+        }
+
+        #slides-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 150px;
+            width: 1400px;
+            height: 100vh;
+            transform-origin: top center;
+            overflow-y: auto;
+            padding: 20px 0;
+        }
+
+        /* Scrollbars */
+        #slides-wrapper::-webkit-scrollbar { width: 8px; }
+        #slides-wrapper::-webkit-scrollbar-track { background: #111; }
+        #slides-wrapper::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        .table-scroll-area::-webkit-scrollbar { width: 10px; }
+        .table-scroll-area::-webkit-scrollbar-track { background: #222; border-radius: 4px; }
+        .table-scroll-area::-webkit-scrollbar-thumb { background: var(--primary-gold); border-radius: 4px; border: 2px solid #222; }
+
+        .slide-container {
+            width: 1400px;
+            min-height: 788px;
+            height: auto;
+            background-color: var(--deep-bg);
+            position: relative;
+            border: 2px solid #333;
+            box-shadow: 0 0 50px rgba(0,0,0,0.9);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            overflow: visible;
+            margin-bottom: 20px;
+        }
+
+        #cover-slide, #intro-slide, .portada-container, #new-intro-slide {
+            height: 788px;
+            overflow: hidden;
+        }
+
+        /* --- BACKGROUND GRIDS --- */
+        .grid-bg { 
+            position: absolute; 
+            inset: 0; 
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px), 
+                linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px); 
+            background-size: 50px 50px; 
+            z-index: 0; 
+        }
+
+        /* --- NAVIGATION HEADER --- */
+        .rubric-bar {
+            width: 100%;
+            height: 60px;
+            background: rgba(0,0,0,0.95);
+            border-bottom: 2px solid #444;
+            display: flex;
+            align-items: center;
+            padding: 0 40px;
+            z-index: 100;
+            justify-content: space-between;
+        }
+
+        .team-id {
+            font-family: 'Cinzel', serif;
+            color: var(--primary-gold);
+            font-weight: 700;
+            font-size: 20px;
+            letter-spacing: 2px;
+        }
+
+        .rubric-steps { display: flex; gap: 5px; }
+        .rubric-step {
+            font-size: 14px;
+            text-transform: uppercase;
+            padding: 8px 20px;
+            background: #222;
+            color: #666;
+            clip-path: polygon(15% 0, 100% 0, 85% 100%, 0% 100%);
+            font-weight: 700;
+            transition: all 0.3s;
+        }
+
+        .slide-identify .step-identify { background: var(--primary-gold); color: #000; box-shadow: 0 0 15px rgba(212, 175, 55, 0.4); }
+        .slide-design .step-design { background: var(--primary-gold); color: #000; }
+        .slide-create .step-create { background: var(--primary-gold); color: #000; }
+        .slide-iterate .step-iterate { background: var(--primary-gold); color: #000; }
+        .slide-communicate .step-communicate { background: var(--primary-gold); color: #000; }
+
+        /* --- CONTENT AREA --- */
+        .slide-content {
+            padding: 40px 60px 60px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+            height: 100%;
+        }
+
+        .slide-title-area {
+            border-bottom: 3px solid var(--primary-gold);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 48px;
+            margin: 0;
+            background: linear-gradient(to right, #fff, #999);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+        }
+
+        .slide-subtitle {
+            font-family: 'Rajdhani';
+            color: var(--primary-gold);
+            font-size: 20px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+
+        /* --- TABLE STYLES --- */
+        .table-scroll-area { width: 100%; height: auto; overflow: visible; border: 1px solid #444; background: rgba(0,0,0,0.3); position: relative; }
+        .decision-matrix { width: 100%; border-collapse: separate; border-spacing: 0 4px; font-size: 22px; }
+        .decision-matrix thead th { position: relative; z-index: 20; box-shadow: 0 2px 5px rgba(0,0,0,0.8); }
+        .decision-matrix th { text-align: center; padding: 12px; color: #fff; background: #1a1a1a; border-bottom: 2px solid #555; text-transform: uppercase; font-size: 20px; letter-spacing: 1px; font-weight: bold; }
+        
+        .col-val { color: #ff3333 !important; border-bottom-color: #ff3333 !important; }
+        .col-fea { color: #ffa500 !important; border-bottom-color: #ffa500 !important; }
+        .col-exp { color: #00d2ff !important; border-bottom-color: #00d2ff !important; }
+        .col-inn { color: var(--success-green) !important; border-bottom-color: var(--success-green) !important; }
+        .col-cool { color: #db00ff !important; border-bottom-color: #db00ff !important; }
+        .col-tot { color: #fff !important; border-bottom-color: #fff !important; }
+
+        .decision-matrix td { padding: 15px; background: #111; border: none; color: #eee; vertical-align: middle; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        
+        .winner-cell { background: rgba(0, 229, 255, 0.2) !important; border-top: 2px solid var(--success-green) !important; border-bottom: 2px solid var(--success-green) !important; color: #fff; }
+        .winner-cell:first-child { border-left: 2px solid var(--success-green) !important; }
+        .winner-cell:last-child { border-right: 2px solid var(--success-green) !important; }
+
+        .photo-box { width: 200px; height: 130px; background-color: #222; border: 1px solid #555; background-size: cover; background-position: center; display: flex; align-items: flex-end; justify-content: flex-end; color: #555; font-size: 9px; position: relative; }
+        .photo-box-large { width: 300px; height: 200px; background-color: #222; border: 2px solid var(--primary-gold); background-size: cover; background-position: center; }
+        .highlight-row td { background: rgba(212, 175, 55, 0.15) !important; border-top: 1px solid #555; border-bottom: 1px solid #555; }
+        .file-label { display: none; }
+
+        .quote-cell { color: var(--tech-blue) !important; font-style: italic; background: rgba(0, 210, 255, 0.05) !important; border-left: 3px solid var(--tech-blue) !important; padding: 15px 20px; font-size: 24px; line-height: 1.3; vertical-align: top; }
+        .quote-wrapper { display: flex; flex-direction: column; height: 100%; justify-content: space-between; min-height: 80px; color: var(--tech-blue); }
+        .quote-text { display: block; margin: 5px 0; text-align: center; font-weight: 500; color: var(--tech-blue) !important; }
+        .quote-mark-start { align-self: flex-start; font-size: 20px; color: var(--tech-blue); opacity: 0.8; }
+        .quote-mark-end { align-self: flex-end; font-size: 20px; color: var(--tech-blue); opacity: 0.8; }
+        
+        .problem-list { margin: 0; padding-left: 5px; font-size: 22px; line-height: 1.4; list-style: none; }
+        .problem-list li { margin-bottom: 8px; display: flex; align-items: flex-start; gap: 8px; }
+        
+        /* NEW: RESEARCH GRID STYLES - PROJECTOR MODE */
+        .research-grid { 
+            display: grid; 
+            grid-template-columns: repeat(5, 1fr); /* 5 Columns */
+            gap: 20px; 
+            margin-bottom: 30px; 
+            width: 100%;
+        }
+        .research-item { 
+            display: flex; 
+            flex-direction: column; /* Image Top, Text Bottom */
+            background: #151515; 
+            border: 1px solid #444; 
+            transition: transform 0.2s; 
+            overflow: hidden;
+            height: 100%;
+        }
+        .research-item:hover { 
+            border-color: var(--primary-gold); 
+            transform: translateY(-5px); 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+        .research-thumb { 
+            width: 100%; 
+            height: 160px; /* Big Image */
+            background-size: cover; 
+            background-position: center; 
+            background-color: #222; 
+            border-bottom: 1px solid #333;
+        }
+        .research-text-area {
+            padding: 12px;
+            text-align: center;
+            background: linear-gradient(180deg, #1a1a1a, #0a0a0a);
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .research-info { 
+            font-size: 22px; 
+            color: #fff; 
+            font-weight: bold; 
+            text-transform: uppercase; 
+            line-height: 1.1; 
+            margin-bottom: 4px;
+        }
+        .research-sub { 
+            font-size: 18px; 
+            color: var(--tech-blue); 
+            font-weight: normal; 
+            display: block; 
+            font-family: 'Kalam', cursive;
+        }
+
+        /* POP-UP EFFECT FOR STONEHENGE */
+        .hover-popup-container { position: relative; }
+        .hover-popup-image {
+            display: none;
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px; height: 400px;
+            z-index: 999;
+            border: 4px solid var(--primary-gold);
+            box-shadow: 0 0 50px rgba(0,0,0,1);
+            background-size: cover;
+            background-position: center;
+            pointer-events: none; /* Let clicks pass through */
+        }
+        /* When hovering the cell, show the popup */
+        .hover-popup-container:hover .hover-popup-image { display: block; }
+
+
+        /* Team Logo */
+        .team-logo-container { border: 4px solid #b8860b; padding: 20px 50px; display: inline-block; background: radial-gradient(circle, #222 0%, #000 100%); box-shadow: 0 0 30px rgba(212, 175, 55, 0.3), inset 0 0 20px rgba(0,0,0,0.8); margin: 20px 0; position: relative; }
+        .team-logo-container::before, .team-logo-container::after { content: ''; position: absolute; width: 10px; height: 10px; background: #b8860b; border-radius: 50%; }
+        .team-logo-container::before { top: 10px; left: 10px; box-shadow: 0 0 5px #fff; }
+        .team-logo-container::after { bottom: 10px; right: 10px; box-shadow: 0 0 5px #fff; }
+
+        .team-title { font-family: 'Black Ops One', cursive; margin: 0; line-height: 1; background: linear-gradient(to bottom, #FFD700, #B8860B); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase; filter: drop-shadow(0px 4px 0px rgba(0,0,0,0.8)); letter-spacing: 2px; text-align: center;}
+
+        /* Polaroids */
+        .polaroid, .polaroid-static {
+            position: absolute;
+            background: #fff;
+            padding: 15px 15px 50px 15px; /* More bottom padding */
+            box-shadow: 5px 5px 25px rgba(0,0,0,0.8);
+            z-index: 25;
+            width: 260px; /* Slightly wider */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            pointer-events: none;
+        }
+        
+        .polaroid { opacity: 0; transform-origin: center; animation: dropDirect 3s ease-out forwards; }
+        .polaroid-static { opacity: 1; transform: rotate(var(--rot)); }
+
+        .polaroid img, .polaroid-static img { width: 100%; height: 190px; object-fit: cover; background: #333; border: 1px solid #ddd; }
+
+        /* MODIFIED: PERMANENT MARKER FONT */
+        .polaroid-text {
+            font-family: 'Permanent Marker', cursive;
+            color: #000;
+            font-size: 26px; /* Slightly larger for marker */
+            font-weight: 400; /* Regular weight is bold enough for this font */
+            margin-top: 15px;
+            text-align: center;
+            line-height: 1.1;
+            transform: rotate(-1deg);
+        }
+
+        @keyframes dropDirect {
+            0% { transform: translateY(-60vh) scale(3) rotate(0deg); opacity: 0; filter: blur(10px); }
+            100% { transform: translateY(0) scale(1) rotate(var(--rot)); opacity: 1; filter: blur(0px); }
+        }
+
+        /* --- X-RAY SCANNER MODIFIED --- */
+        .layer-underground { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            background-color: #001133; 
+            /* MODIFIED: Thicker grid to look like structure */
+            background-image: 
+                linear-gradient(rgba(0, 255, 255, 0.5) 4px, transparent 4px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.5) 4px, transparent 4px);
+            background-size: 80px 80px; /* Bigger grid cells */
+            background-position: center; 
+            z-index: 2; 
+            filter: grayscale(100%) sepia(100%) hue-rotate(180deg) saturate(300%) contrast(1.2); 
+            animation: reveal-scan 6s ease-in-out infinite; 
+        }
+        .scan-beam { 
+            position: absolute; left: 0; width: 100%; height: 20px; /* Thicker beam */
+            background: #00ffff; 
+            box-shadow: 0 0 30px #00ffff, 0 0 50px #00ffff; 
+            z-index: 3; 
+            animation: move-beam 6s ease-in-out infinite; 
+        }
+
+        @keyframes reveal-scan { 0% { clip-path: inset(0 0 100% 0); } 50% { clip-path: inset(0 0 0 0); } 100% { clip-path: inset(0 0 100% 0); } }
+        @keyframes move-beam { 0% { top: 0%; opacity: 0; } 5% { opacity: 1; } 50% { top: 100%; opacity: 1; } 95% { opacity: 1; } 100% { top: 0%; opacity: 0; } }
+
+        /* ... (Rest of styles: source-tag, boxes, etc.) ... */
+        .source-tag { font-size: 16px; color: #aaa; margin-top: 5px; font-style: italic; display: block; font-family: 'Rajdhani'; font-weight: bold; }
+        .source-highlight { color: var(--primary-gold); font-size: 18px; }
+        
+        /* UPDATED: Centered content for Problem Box */
+        .problem-definition-box { 
+            background: linear-gradient(135deg, rgba(255, 51, 51, 0.1), rgba(0,0,0,0.8)); 
+            border: 2px solid var(--alert-red); 
+            padding: 15px; 
+            margin: 10px 0; 
+            position: relative; 
+            box-shadow: 0 0 30px rgba(255,0,0,0.15); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 50px; 
+        }
+        
+        .problem-icon-block { 
+            text-align: center; 
+            flex: 1; /* Forces equal width */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .problem-icon-block i { font-size: 80px; margin-bottom: 10px; filter: drop-shadow(0 0 10px rgba(0,0,0,0.8)); }
+        .problem-text { font-size: 36px; font-family: 'Black Ops One', cursive; text-transform: uppercase; text-align: center; }
+        
+        .pilot-box { background: linear-gradient(135deg, rgba(0, 210, 255, 0.1), rgba(0,0,0,0.8)); border: 2px solid var(--tech-blue); padding: 30px; flex: 1; position: relative; box-shadow: 0 0 20px rgba(0, 210, 255, 0.1); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        /* MODIFIED: REMOVED BADGE */
+        .pilot-box::before { content: none; }
+
+        .why-box { background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(0,0,0,0.8)); border: 2px solid var(--primary-gold); padding: 30px; flex: 1; position: relative; box-shadow: 0 0 20px rgba(212, 175, 55, 0.1); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        .tech-pair-container { display: flex; flex-direction: column; gap: 15px; height: 100%; border: 1px solid #444; padding: 15px; background: rgba(255,255,255,0.02); text-align: center; }
+        .tech-pair-header { font-size: 30px; font-weight: bold; margin-bottom: 10px; text-transform: uppercase; }
+        .tech-photo-wrapper { position: relative; width: 100%; height: 140px; background-color: #222; border: 1px solid #555; overflow: hidden; }
+        .tech-photo-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        .tech-photo-label { position: absolute; top: 5px; left: 5px; background: rgba(0,0,0,0.8); color: #fff; padding: 4px 10px; font-size: 14px; font-family: monospace; border-radius: 2px; font-weight: bold; }
+        .tech-description { font-size: 26px; color: #fff; font-weight: bold; margin-top: 15px; line-height: 1.3; text-shadow: 0 0 5px #000; }
+        .rainbow-text { background: linear-gradient(to right, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3); -webkit-background-clip: text; background-clip: text; color: transparent; font-weight: bold; }
+        .thermal-text { background: linear-gradient(to right, #0000ff, #800080, #ff0000, #ffa500, #ffff00); -webkit-background-clip: text; background-clip: text; color: transparent; font-weight: bold; text-shadow: 0 0 5px rgba(255, 0, 0, 0.3); }
+        .lidar-text { color: #ff0000; text-shadow: 0 0 5px #ff0000, 0 0 10px #ff0000, 0 0 20px #ff0000; font-weight: 800; font-family: 'Rajdhani', sans-serif; letter-spacing: 1px; }
+        .big-impact-text { font-family: 'Cinzel', serif; font-size: 42px; color: var(--primary-gold); text-align: center; line-height: 1.2; text-shadow: 0 4px 10px rgba(0,0,0,0.8); margin: 0; padding: 10px 0; }
+        .scan-data-overlay { position: absolute; top: 70px; left: 50px; font-family: 'Rajdhani', monospace; color: var(--tech-blue); z-index: 5; font-size: 18px; text-shadow: 0 0 5px black; background: rgba(0, 15, 30, 0.95); padding: 25px; padding-bottom: 60px; border: 2px solid var(--tech-blue); border-left: 8px solid var(--tech-blue); min-width: 350px; box-shadow: 0 0 30px rgba(0, 210, 255, 0.2); }
+        .title-box-centered { position: absolute; top: 240px; right: 0px; z-index: 20; background: rgba(0,0,0,0.85); border: 1px solid var(--tech-blue); padding: 80px 50px 30px 150px; backdrop-filter: blur(10px); box-shadow: 0 0 60px black; width: fit-content; max-width: 95%; text-align: right; }
+        .acronym-letter { color: #FFD700 !important; font-family: 'Cinzel', serif; font-weight: 700; font-size: 1.5em; text-shadow: 2px 2px 4px #000000; display: inline-block; }
+        .sys-grid-container { display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 20px; height: 100%; align-items: center; }
+        .sys-col { display: flex; flex-direction: column; gap: 20px; height: 100%; justify-content: center; }
+        .tech-card { background: rgba(0, 15, 40, 0.8); border: 2px solid var(--tech-blue); border-radius: 15px; padding: 15px; width: 100%; text-align: center; display: flex; flex-direction: column; align-items: center; box-shadow: 0 0 20px rgba(0, 210, 255, 0.1); }
+        .logic-card { background: rgba(40, 20, 0, 0.8); border: 2px solid var(--primary-gold); border-radius: 15px; padding: 20px; width: 100%; height: auto; text-align: left; box-shadow: 0 0 20px rgba(212, 175, 55, 0.1); }
+        .output-card-large { background: rgba(0, 40, 0, 0.8); border: 4px solid var(--success-green); border-radius: 15px; padding: 10px; width: 100%; height: 100%; text-align: center; box-shadow: 0 0 20px rgba(0, 255, 157, 0.1); display: flex; flex-direction: column; }
+        .card-title { color: #fff; font-size: 20px; margin-bottom: 10px; text-transform: uppercase; font-weight: bold; }
+        .card-img { width: 100%; height: 160px; background: #222; border-radius: 8px; object-fit: cover; border: 1px solid #555; }
+        .evidence-polaroid { position: absolute; background: #fff; padding: 10px; width: 320px; box-shadow: 5px 5px 15px rgba(0,0,0,0.8); z-index: 30; transform-origin: center; }
+        .evidence-polaroid img { width: 100%; height: 210px; object-fit: cover; background: #333; }
+        .evidence-clip { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 30px; height: 50px; background: #999; border-radius: 10px; border: 2px solid #555; z-index: 35; }
+        .log-container { display: flex; flex-direction: column; gap: 10px; height: auto; flex-shrink: 0; }
+        .log-card { display: grid; grid-template-columns: 80px 1.5fr 2.5fr 1.5fr; align-items: center; background: #222; border-radius: 10px; padding: 12px 15px; border-left: 8px solid #555; box-shadow: 3px 3px 10px rgba(0,0,0,0.5); transition: transform 0.2s; font-size: 16px; }
+        .log-card:hover { transform: translateX(5px); }
+        .log-icon { font-size: 30px; text-align: center; color: #fff; }
+        .log-title { font-size: 20px; font-weight: bold; color: #fff; text-transform: uppercase; }
+        .log-desc { font-size: 18px; color: #aaa; line-height: 1.2; }
+        .log-validator { font-size: 18px; color: var(--tech-blue); text-align: right; font-style: italic; font-weight: bold; }
+        .status-fail { border-left-color: var(--alert-red); background: linear-gradient(90deg, rgba(255,51,51,0.1), #222); }
+        .status-warn { border-left-color: orange; background: linear-gradient(90deg, rgba(255,165,0,0.1), #222); }
+        .status-success { border-left-color: var(--success-green); background: linear-gradient(90deg, rgba(0,255,157,0.1), #222); }
+        .gallery-3d-container { position: relative; width: 100%; height: 250px; perspective: 1000px; overflow: hidden; display: flex; justify-content: center; align-items: center; margin-top: 10px; }
+        .gallery-item { position: absolute; width: 350px; height: 220px; background: #222; border: 2px solid var(--tech-blue); border-radius: 10px; overflow: hidden; transition: all 0.5s ease-in-out; box-shadow: 0 10px 30px rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; }
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; }
+        .pos-center { z-index: 10; transform: translateX(0) scale(1.1); opacity: 1; filter: blur(0px); border-color: var(--primary-gold); }
+        .pos-left-1 { z-index: 8; transform: translateX(-300px) scale(0.8); opacity: 0.9; filter: blur(0px) brightness(0.8); }
+        .pos-right-1 { z-index: 8; transform: translateX(300px) scale(0.8); opacity: 0.9; filter: blur(0px) brightness(0.8); }
+        .pos-left-2 { z-index: 5; transform: translateX(-500px) scale(0.6); opacity: 0.6; filter: blur(2px) brightness(0.6); }
+        .pos-right-2 { z-index: 5; transform: translateX(500px) scale(0.6); opacity: 0.6; filter: blur(2px) brightness(0.6); }
+        .pos-hidden { z-index: 0; transform: translateX(0) scale(0.5); opacity: 0; visibility: hidden; }
+        
+        /* EXPANDED PHYSICS SLIDE STYLES - SYMMETRIC */
+        .expert-card { 
+            display: flex; 
+            gap: 20px; 
+            align-items: center; 
+            background: rgba(255,255,255,0.03); 
+            padding: 20px; 
+            border-left: 8px solid var(--primary-gold); 
+            border-radius: 10px; 
+            width: 100%; 
+            height: 220px; /* Matched height */
+            flex: 1; /* Equal width */
+        }
+        .choice-card { 
+            border: 2px solid; 
+            padding: 20px; 
+            border-radius: 8px; 
+            text-align: center; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            height: 220px; /* FORCED SAME HEIGHT */
+            width: 100%; 
+            flex: 1; /* Equal width */
+        }
+        
+        .expert-photo { width: 180px; height: 180px; background-color: #222; border: 1px solid #555; object-fit: cover; flex-shrink: 0; border-radius: 4px; }
+        .expert-info { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
+        .expert-info strong { color: var(--primary-gold); font-size: 28px; display: block; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .expert-info span { color: #ccc; font-size: 20px; display: block; margin-bottom: 10px; font-style: italic; }
+        .expert-note { font-family: 'Kalam', cursive; color: #fff; font-size: 24px; line-height: 1.1; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 5px; border: 1px dashed #777; }
+        
+        /* New 2-column grid for images */
+        .collage-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; height: 220px; } /* Increased height */
+        .collage-item { width: 100%; height: 100%; background: #222; border: 1px solid #555; overflow: hidden; }
+        .collage-item img { width: 100%; height: 100%; object-fit: cover; }
+
+        .kid-name { 
+            font-family: 'Kalam', cursive; 
+            font-size: 22px; /* REDUCED SIZE (50% of 40px) */
+            font-weight: 700; 
+            text-transform: uppercase; 
+            padding: 5px 15px; /* REDUCED PADDING */
+            transform: rotate(-3deg); 
+            text-shadow: 1px 1px 0px #000;
+            border-width: 2px !important;
+        }
+        .kid-name:nth-child(even) { transform: rotate(3deg); }
+
+        /* VALIDATION SLIDE - UPDATED */
+        .val-card { background: #111; border: 1px solid #444; padding: 20px; text-align: center; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 10px; }
+        /* White background for logos & strict size */
+        .val-logo { 
+            background-color: #fff; 
+            padding: 10px; 
+            border-radius: 5px; 
+            height: 90px; 
+            width: 100%; 
+            object-fit: contain; 
+            margin-bottom: 5px;
+        }
+        .val-person { width: 100%; height: 180px; object-fit: cover; border: 2px solid var(--primary-gold); }
+        .val-name { color: var(--primary-gold); font-size: 24px; font-weight: bold; margin-bottom: 2px; }
+        .val-role { color: #aaa; font-size: 18px; font-style: italic; margin-bottom: 10px; }
+        .val-quote { font-family: 'Kalam', cursive; font-size: 22px; color: var(--success-green); margin-top: auto; }
+
+        .impact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; height: 100%; }
+        .imp-col { border: 2px solid #555; border-radius: 15px; padding: 20px; background: rgba(0,0,0,0.5); }
+        .imp-col.old { border-color: var(--alert-red); background: linear-gradient(180deg, rgba(255, 51, 51, 0.05), transparent); }
+        .imp-col.new { border-color: var(--success-green); background: linear-gradient(180deg, rgba(0, 255, 255, 0.05), transparent); }
+        .imp-header { font-size: 40px; font-weight: bold; text-align: center; margin-bottom: 20px; font-family: 'Black Ops One'; }
+        .imp-step { display: flex; align-items: center; margin-bottom: 20px; font-size: 24px; color: #ddd; }
+        .imp-step i { width: 60px; text-align: center; font-size: 30px; margin-right: 20px; }
+        .imp-old-icon { color: var(--alert-red); }
+        .imp-new-icon { color: var(--success-green); }
+
+        .comparison-slider-container { position: relative; width: 100%; height: 600px; border: 4px solid var(--tech-blue); box-shadow: 0 0 30px rgba(0, 210, 255, 0.2); overflow: hidden; background: #000; }
+        .comp-img-base { position: absolute; top:0; left:0; width: 100%; height: 100%; object-fit: cover; z-index: 1; }
+        .comp-overlay-clipper { position: absolute; top:0; left:0; height: 100%; width: 0%; overflow: hidden; border-right: 4px solid #fff; box-shadow: 5px 0 20px rgba(0,0,0,0.8); animation: scanSwipe 8s ease-in-out infinite alternate; z-index: 2; }
+        .comp-img-overlay { height: 100%; width: 1272px; max-width: none; object-fit: cover; }
+        .comp-label { position: absolute; bottom: 20px; padding: 10px 20px; background: rgba(0,0,0,0.8); color: #fff; font-size: 24px; font-weight: bold; font-family: 'Black Ops One'; z-index: 10; border: 1px solid #555; }
+        @keyframes scanSwipe { 0% { width: 0%; } 15% { width: 0%; } 85% { width: 100%; } 100% { width: 100%; } }
+
+        /* SIMULATION SPECIFIC STYLES */
+        #sim-hud {
+            position: absolute; top: 20px; left: 20px; color: #00FF00; background: rgba(0, 0, 0, 0.9); padding: 15px; border: 2px solid #00FF00; pointer-events: none; z-index: 10; display: none; font-weight: bold; font-size: 16px; line-height: 1.5; font-family: 'Courier New', monospace;
+        }
+        .sim-veritas-title { color: #00FFFF; font-size: 24px; text-shadow: 0 0 10px #00FFFF; border-bottom: 1px solid #00FFFF; display: inline-block; margin-bottom: 5px; }
+        #sim-startScreen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 20; color: white; text-align: center; font-family: 'Courier New', monospace; }
+        #sim-startScreen h1 { margin: 0 0 10px 0; color: #00FFFF; text-shadow: 0 0 15px #00FFFF; letter-spacing: 5px; font-size: 32px; font-family: 'Courier New', monospace; }
+        #sim-startScreen h2 { margin: 0 0 30px 0; color: #ffffff; font-size: 18px; font-weight: normal; font-family: 'Courier New', monospace; }
+        .sim-btn { background: #000; color: #00FF00; border: 3px solid #00FF00; padding: 15px 50px; font-family: 'Courier New', monospace; font-size: 20px; font-weight: bold; cursor: pointer; transition: all 0.3s; text-transform: uppercase; box-shadow: 0 0 15px rgba(0, 255, 0, 0.3); }
+        .sim-btn:hover { background: #00FF00; color: #000; box-shadow: 0 0 30px #00FF00; }
+
+    </style>
+</head>
+<body>
+
+<div id="wrapper-scale-container" style="width: 100%; height: 100vh; display: flex; align-items: flex-start; justify-content: center; overflow: hidden;">
+    
+    <div id="slides-wrapper">
+
+        <div class="slide-container" id="new-intro-slide">
+             <div class="grid-bg"></div>
+            <div style="position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10;">
+                <div style="border: 4px solid var(--primary-gold); padding: 50px 80px; background: rgba(0,0,0,0.95); box-shadow: 0 0 80px rgba(0,0,0,0.9); text-align: center; max-width: 1100px;">
+                    <div class="team-logo-container">
+                        <div class="team-title" style="font-size: 35px; line-height: 1.2;">NCLIC Shakespeare<br><span style="font-size: 70px;">LEGO MACHINES</span></div>
+                    </div>
+                    <div style="margin: 30px auto; padding: 20px; border-top: 2px solid var(--primary-gold); border-bottom: 2px solid var(--primary-gold); background: linear-gradient(90deg, rgba(212, 175, 55, 0.1), transparent, rgba(212, 175, 55, 0.1));">
+                        <div style="font-family: 'Black Ops One'; font-size: 50px; color: #fff; letter-spacing: 4px; text-shadow: 0 0 20px var(--tech-blue);">
+                            TEAM PRESENTATION
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 20px; justify-content: center; align-items: center; margin-top: 40px;">
+                        <div style="display: flex; flex-wrap: wrap; gap: 30px; justify-content: center;">
+                            <span class="kid-name" style="color: var(--alert-red); border: 3px dashed var(--alert-red);">Arturo</span>
+                            <span class="kid-name" style="color: var(--tech-blue); border: 3px dashed var(--tech-blue);">Rodrigo</span>
+                            <span class="kid-name" style="color: var(--success-green); border: 3px dashed var(--success-green);">Javier</span>
+                            <span class="kid-name" style="color: #db00ff; border: 3px dashed #db00ff;">Naiara</span>
+                        </div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 30px; justify-content: center;">
+                            <span class="kid-name" style="color: var(--bright-gold); border: 3px dashed var(--bright-gold);">Martina</span>
+                            <span class="kid-name" style="color: #ff7f00; border: 3px dashed #ff7f00;">Xabi</span>
+                            <span class="kid-name" style="color: #fff; border: 3px dashed #fff;">Jon</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-container" id="intro-slide">
+             <div class="grid-bg"></div>
+            <div style="position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10;">
+                <div style="border: 2px solid var(--primary-gold); padding: 60px 100px; background: rgba(0,0,0,0.95); box-shadow: 0 0 80px rgba(0,0,0,0.9); text-align: center; max-width: 900px;">
+                    <h1 style="font-size: 80px; color: #fff; margin: 20px 0; font-family: 'Cinzel'; line-height: 1;">INNOVATION<br>PROJECT</h1>
+                    <div style="margin: 30px auto; padding: 20px; border: 1px solid var(--primary-gold); background: linear-gradient(90deg, rgba(212, 175, 55, 0.1), transparent, rgba(212, 175, 55, 0.1));">
+                        <div style="font-family: 'Black Ops One'; font-size: 40px; color: var(--primary-gold); letter-spacing: 2px;">
+                            REDEFINING THE FUTURE OF THE PAST
+                        </div>
+                    </div>
+                    <div style="margin-top: 30px; font-size: 24px; color: #fff; font-family: 'Russo One'; letter-spacing: 2px; text-transform: uppercase;">
+                        NCLIC Shakespeare - LEGO MACHINES
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-container slide-identify">
+             <div class="rubric-bar">
+                <div class="team-id">RESEARCH PHASE</div>
+                <div class="rubric-steps">
+                    <div class="rubric-step step-identify">IDENTIFY</div>
+                    <div class="rubric-step">DESIGN</div>
+                    <div class="rubric-step">CREATE</div>
+                    <div class="rubric-step">ITERATE</div>
+                    <div class="rubric-step">COMMUNICATE</div>
+                </div>
+            </div>
+            <div class="grid-bg"></div>
+            <div class="slide-content">
+                <div class="slide-title-area">
+                    <h2>FIELD RESEARCH</h2>
+                    <div class="slide-subtitle">PROBLEMS DETECTED IN VISITED SITES</div>
+                </div>
+                
+                <div class="research-grid">
+                    <div class="research-item"><div class="research-thumb" style="background-image: url('field/field (1).jpg');"></div><div class="research-text-area"><div class="research-info">Medina Azahara</div><span class="research-sub">Córdoba</span></div></div>
+                    <div class="research-item"><div class="research-thumb" style="background-image: url('field/field (2).jpg');"></div><div class="research-text-area"><div class="research-info">Dover Castle</div><span class="research-sub">UK</span></div></div>
+                    <div class="research-item"><div class="research-thumb" style="background-image: url('field/field (3).jpg');"></div><div class="research-text-area"><div class="research-info">Château Menthon</div><span class="research-sub">France</span></div></div>
+                    <div class="research-item"><div class="research-thumb" style="background-image: url('field/field (4).jpg');"></div><div class="research-text-area"><div class="research-info">Palais de l'Île</div><span class="research-sub">Annecy</span></div></div>
+                    <div class="research-item"><div class="research-thumb" style="background-image: url('field/field (5).jpg');"></div><div class="research-text-area"><div class="research-info">Cusco</div><span class="research-sub">Peru</span></div></div>
+                    
+                    <div class="research-item"><div class="research-thumb" style="background-image: url('field/field (6).jpg');"></div><div class="research-text-area"><div class="research-info">Charla Arqueólogo</div><span class="research-sub">Gerardo Martinez</span></div></div>
+                    <div class="research-item"><div class="research-thumb" style="background-image: url('field/field (7).jpg');"></div><div class="research-text-area"><div class="research-info">Bibat Museum</div><span class="research-sub">Vitoria</span></div></div>
+                    <div class="research-item"><div class="research-thumb" style="background-image: url('field/field (8).jpg');"></div><div class="research-text-area"><div class="research-info">Catedral Vitoria</div><span class="research-sub">Vitoria</span></div></div>
+                    <div class="research-item"><div class="research-thumb" style="background-image: url('field/field (9).jpg');"></div><div class="research-text-area"><div class="research-info">Toledo Heritage</div><span class="research-sub">Toledo</span></div></div>
+                    <div class="research-item"><div class="research-thumb" style="background-image: url('field/field (10).jpg');"></div><div class="research-text-area"><div class="research-info">Castillo Almodóvar</div><span class="research-sub">Córdoba</span></div></div>
+                    
+                    <div class="research-item"><div class="research-thumb" style="background-image: url('field/field (11).jpg');"></div><div class="research-text-area"><div class="research-info">La Calahorra</div><span class="research-sub">Granada</span></div></div>
+                    <div class="research-item"><div class="research-thumb" style="background-image: url('field/field (12).jpg');"></div><div class="research-text-area"><div class="research-info">Castillo Alcalá</div><span class="research-sub">Sevilla</span></div></div>
+                    <div class="research-item"><div class="research-thumb" style="background-image: url('field/field (13).jpg');"></div><div class="research-text-area"><div class="research-info">Erasmus+ Bélgica</div><span class="research-sub">Vitoria</span></div></div>
+                    <div class="research-item"><div class="research-thumb" style="background-image: url('field/field (14).jpg');"></div><div class="research-text-area"><div class="research-info">Muralla Vitoria</div><span class="research-sub">Vitoria</span></div></div>
+                    <div class="research-item"><div class="research-thumb" style="background-image: url('field/field (15).jpg');"></div><div class="research-text-area"><div class="research-info">Bath</div><span class="research-sub">UK</span></div></div>
+                </div>
+
+                <div class="table-scroll-area">
+                    <table class="decision-matrix">
+                        <thead>
+                            <tr>
+                                <th width="20%">IMAGE</th>
+                                <th width="20%">KEY SITE / LOCATION</th>
+                                <th width="30%">DETECTED PROBLEMS</th>
+                                <th width="30%">EXPERT QUOTES</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="highlight-row"><td><div class="photo-box-large" style="background-image: url('field/field (16).jpg');"><span class="file-label">field (16).jpg</span></div></td><td style="color: var(--primary-gold); font-weight:bold; font-size: 32px;">Atapuerca<br><span style="color:#aaa; font-weight:normal; font-size:24px;">Burgos</span></td><td><ul class="problem-list" style="font-size: 26px;"><li><i class="fa-solid fa-triangle-exclamation" style="color:var(--alert-red)"></i> High cost of "blind digging".</li><li><i class="fa-solid fa-triangle-exclamation" style="color:var(--alert-red)"></i> Excavation destroys context.</li></ul></td><td class="quote-cell" style="font-size: 30px;"><div class="quote-wrapper"><div class="quote-mark-start"><i class="fa-solid fa-quote-left"></i></div><span class="quote-text">Moving earth without certainty is unaffordable.</span><div class="quote-mark-end"><i class="fa-solid fa-quote-right"></i></div></div></td></tr>
+                            <tr class="highlight-row"><td><div class="photo-box-large" style="background-image: url('field/field (17).jpg');"><span class="file-label">field (17).jpg</span></div></td><td style="color: var(--primary-gold); font-weight:bold; font-size: 32px;">Dólmenes<br><span style="color:#aaa; font-weight:normal; font-size:24px;">Álava</span></td><td><ul class="problem-list" style="font-size: 26px;"><li><i class="fa-solid fa-triangle-exclamation" style="color:var(--alert-red)"></i> Burial mound covers structure.</li><li><i class="fa-solid fa-triangle-exclamation" style="color:var(--alert-red)"></i> Risk of collapse if dug.</li></ul></td><td class="quote-cell" style="font-size: 30px;"><div class="quote-wrapper"><div class="quote-mark-start"><i class="fa-solid fa-quote-left"></i></div><span class="quote-text">Respect the resting place.</span><div class="quote-mark-end"><i class="fa-solid fa-quote-right"></i></div></div></td></tr>
+                            <tr class="highlight-row"><td><div class="photo-box-large" style="background-image: url('field/field (18).jpg');"><span class="file-label">field (18).jpg</span></div></td><td style="color: var(--primary-gold); font-weight:bold; font-size: 32px;">Boutae<br><span style="color:#aaa; font-weight:normal; font-size:24px;">Annecy</span></td><td><ul class="problem-list" style="font-size: 26px;"><li><i class="fa-solid fa-triangle-exclamation" style="color:var(--alert-red)"></i> Roman city under streets.</li><li><i class="fa-solid fa-triangle-exclamation" style="color:var(--alert-red)"></i> Urban traffic prevents excavation.</li></ul></td><td class="quote-cell" style="font-size: 30px;"><div class="quote-wrapper"><div class="quote-mark-start"><i class="fa-solid fa-quote-left"></i></div><span class="quote-text">Excavation only during construction.</span><div class="quote-mark-end"><i class="fa-solid fa-quote-right"></i></div></div></td></tr>
+                            <tr class="highlight-row"><td><div class="photo-box-large" style="background-image: url('field/field (19).jpg');"><span class="file-label">field (19).jpg</span></div></td><td style="color: var(--primary-gold); font-weight:bold; font-size: 32px;">Machu Picchu<br><span style="color:#aaa; font-weight:normal; font-size:24px;">Peru</span></td><td><ul class="problem-list" style="font-size: 26px;"><li><i class="fa-solid fa-triangle-exclamation" style="color:var(--alert-red)"></i> Dense vegetation.</li><li><i class="fa-solid fa-triangle-exclamation" style="color:var(--alert-red)"></i> Difficult access.</li></ul></td><td class="quote-cell" style="font-size: 30px;"><div class="quote-wrapper"><div class="quote-mark-start"><i class="fa-solid fa-quote-left"></i></div><span class="quote-text">The jungle hides more than we see.</span><div class="quote-mark-end"><i class="fa-solid fa-quote-right"></i></div></div></td></tr>
+                            <tr class="highlight-row">
+                                <td class="hover-popup-container">
+                                    <div class="photo-box-large" style="background-image: url('field/field (20).jpg');"><span class="file-label">field (20).jpg</span></div>
+                                    <div class="hover-popup-image" style="background-image: url('field/field (21).jpg');"></div>
+                                </td>
+                                <td style="color: var(--primary-gold); font-weight:bold; font-size: 32px;">Stonehenge<br><span style="color:#aaa; font-weight:normal; font-size:24px;">UK</span></td><td><ul class="problem-list" style="font-size: 26px;"><li><i class="fa-solid fa-triangle-exclamation" style="color:var(--alert-red)"></i> Ritual landscape hidden.</li><li><i class="fa-solid fa-triangle-exclamation" style="color:var(--alert-red)"></i> Impossible to dig sacred soil.</li></ul></td><td class="quote-cell" style="font-size: 30px;"><div class="quote-wrapper"><div class="quote-mark-start"><i class="fa-solid fa-quote-left"></i></div><span class="quote-text">The stones are 10%; the real map is hidden.</span><div class="quote-mark-end"><i class="fa-solid fa-quote-right"></i></div></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-container slide-identify">
+            <div class="rubric-bar"><div class="team-id">STRATEGIC DECISION</div><div class="rubric-steps"><div class="rubric-step step-identify">IDENTIFY</div><div class="rubric-step">DESIGN</div><div class="rubric-step">CREATE</div><div class="rubric-step">ITERATE</div><div class="rubric-step">COMUNICATE</div></div></div>
+            <div class="grid-bg"></div>
+            <div class="slide-content" style="position: relative;">
+                <div class="slide-title-area"><h2>SOLUTION SCORING MATRIX</h2><div class="slide-subtitle">SELECTING OUR MISSION</div></div>
+                <div class="evidence-polaroid" style="top: 250px; left: 510px; transform: rotate(-3deg);"><div class="evidence-clip" style="background:#b8860b; border-color:#d4af37;"></div> <img src="evidence/evidence (1).jpg" onerror="this.src='https://placehold.co/320x210/444/777?text=Evidence+1'"></div>
+                <div class="evidence-polaroid" style="top: 300px; left: 860px; transform: rotate(1deg);"><div class="evidence-clip" style="background:#b8860b; border-color:#d4af37;"></div><img src="evidence/evidence (2).jpg" onerror="this.src='https://placehold.co/320x210/444/777?text=Evidence+2'"></div>
+                <table class="decision-matrix" style="font-size: 24px; margin-bottom: 30px; text-align: center;">
+                    <thead><tr><th width="32%" style="text-align: left; font-size: 26px;">POTENTIAL PROJECT</th><th width="8%" class="col-val" style="font-size: 24px;">VALUE</th><th width="8%" class="col-fea" style="font-size: 24px;">FEASIBILITY</th><th width="8%" class="col-exp" style="font-size: 24px;">EXPERTS</th><th width="8%" class="col-inn" style="font-size: 24px;">INNOVATION</th><th width="10%" class="col-cool" style="font-size: 24px;">IS IT COOL?</th><th width="8%" class="col-tot" style="font-size: 24px;">TOTAL</th></tr></thead>
+                    <tbody>
+                        <tr><td style="text-align: left;"><strong style="font-size: 28px;">1. AI Pottery Sorter</strong><br><span class="source-tag">Source: Bibat Museum</span></td><td class="score-mid">7</td><td class="score-high">9</td><td class="score-low">4</td><td class="score-mid">6</td><td class="score-cool">5</td><td style="font-weight: bold; color: #888;">31</td></tr>
+                        <tr><td style="text-align: left;"><strong style="font-size: 28px;">2. Anti-Vandalism</strong><br><span class="source-tag">Source: Calahorra</span></td><td class="score-high">8</td><td class="score-mid">5</td><td class="score-low">2</td><td class="score-low">3</td><td class="score-cool">3</td><td style="font-weight: bold; color: #888;">21</td></tr>
+                        <tr><td style="text-align: left;"><strong style="font-size: 28px;">3. VR Reconstruction</strong><br><span class="source-tag">Source: La Calahorra, Alcalá</span></td><td class="score-low">4</td><td class="score-high">9</td><td class="score-mid">7</td><td class="score-low">3</td><td class="score-cool">9</td><td style="font-weight: bold; color: #888;">32</td></tr>
+                        <tr><td style="text-align: left;"><strong style="font-size: 28px;">4. Structural Health Monitor</strong><br><span class="source-tag">Source: Catedral Vitoria, Palais</span></td><td class="score-high">9</td><td class="score-mid">6</td><td class="score-mid">6</td><td class="score-low">4</td><td class="score-cool">4</td><td style="font-weight: bold; color: #888;">29</td></tr>
+                        <tr><td style="text-align: left;"><strong style="font-size: 28px;">5. Auto-Cleaning Drone</strong><br><span class="source-tag">Source: Machu Picchu</span></td><td class="score-mid">6</td><td class="score-low">4</td><td class="score-mid">5</td><td class="score-mid">7</td><td class="score-cool">8</td><td style="font-weight: bold; color: #888;">30</td></tr>
+                        <tr class="winner-row"><td class="winner-cell" style="text-align: left; color: #fff;"><i class="fa-solid fa-trophy" style="color: var(--primary-gold);"></i> <strong style="font-size: 34px;">6. NON-INVASIVE PROSPECTION</strong><br><span class="source-tag source-highlight" style="font-size: 20px;">Source: Atapuerca, Stonehenge, Dólmenes, Boutae, Machu Picchu, Toledo</span></td><td class="winner-cell score-high" style="font-size: 40px;">10</td><td class="winner-cell score-mid" style="font-size: 40px;">7</td><td class="winner-cell score-high" style="font-size: 40px;">9</td><td class="winner-cell score-high" style="font-size: 40px;">10</td><td class="winner-cell score-cool" style="font-size: 40px;">10</td><td class="winner-cell" style="font-weight: bold; font-size: 40px; color: var(--primary-gold);">46</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="slide-container slide-identify">
+            <div class="rubric-bar"><div class="team-id">DEFINING THE PROBLEM</div><div class="rubric-steps"><div class="rubric-step step-identify">IDENTIFY</div><div class="rubric-step">DESIGN</div><div class="rubric-step">CREATE</div><div class="rubric-step">ITERATE</div><div class="rubric-step">COMMUNICATE</div></div></div>
+            <div class="grid-bg"></div>
+            <div class="slide-content">
+                <div class="slide-title-area"><h2>THE CHALLENGE</h2><div class="slide-subtitle">CRITICAL ISSUES & PROJECT IDENTITY</div></div>
+                <div class="problem-definition-box"><div class="problem-icon-block" style="color: var(--alert-red);"><i class="fa-solid fa-burst"></i><div class="problem-text">Excavation is<br>destructive</div></div><div style="width: 5px; height: 150px; background: #333;"></div><div class="problem-icon-block" style="color: var(--success-green);"><i class="fa-solid fa-eye"></i><div class="problem-text">SEE WITHOUT<br>TOUCHING</div></div></div>
+                <div style="display: flex; gap: 30px; margin-top: 20px;">
+                    <div class="pilot-box"><h3 style="color: var(--tech-blue); font-size: 50px; margin: 0; line-height: 1;">IRUÑA-VELEIA</h3><p style="font-size: 26px; color: #ccc; margin: 5px 0;">90% COVERED</p></div>
+                    <div class="why-box"><h3 style="color: var(--primary-gold); font-size: 50px; margin: 0; line-height: 1;">V.E.R.I.T.A.S.</h3><p style="font-size: 26px; color: #ccc; margin: 5px 0;">TRUTH UNDERGROUND</p></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-container portada-container">
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 40px; background: rgba(0,0,0,0.8); z-index: 30; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-family: monospace; color: var(--tech-blue); font-size: 12px; border-bottom: 1px solid var(--tech-blue);"><span>SYS: ONLINE</span><span>BAT: 98%</span><span>GPS: 42.84N, 2.73W (IRUÑA-VELEIA)</span><span>MODE: DEEP SCAN</span></div>
+            <div class="scanner-wrapper"><div class="layer-surface"></div><div class="layer-underground"></div><div class="scan-beam"></div><div class="scan-data-overlay"><div style="margin-bottom: 5px; color: #fff;"><i class="fa-solid fa-satellite-dish"></i> SCANNING...</div><div style="font-size: 20px; font-weight: bold; color: #FFD700; line-height: 1.1; white-space: nowrap;">POLIGONO 3 IRUÑA DE OCA</div><div style="border-top: 1px solid #444; margin: 10px 0;"></div><div style="margin-bottom: 5px;">DEPTH: <span style="color: #fff; font-weight: bold;">1.2m</span></div><div style="margin-bottom: 5px;">DENSITY: <span style="color: #fff; font-weight: bold;">HIGH (STONE)</span></div><div>PROBABILITY: <span style="color: var(--success-green); font-weight: bold;">98% ROMAN REMAINS</span></div></div></div>
+            <div class="title-box-centered"><h1 style="font-size: 130px; margin: 0; line-height: 0.8; color: #FFD700; font-family: 'Cinzel'; letter-spacing: 5px; text-shadow: 4px 4px 0 #000;">V.E.R.I.T.A.S.</h1><h2 style="font-size: 34px; color: #fff; letter-spacing: 2px; margin-top: 5px; margin-bottom: 5px; font-family: 'Rajdhani'; line-height: 1.3;"><span class="acronym-letter">V</span>irtual <span class="acronym-letter">E</span>xcavation <span class="acronym-letter">R</span>evealing <span class="acronym-letter">I</span>nvisible <span class="acronym-letter">T</span>errain <br>via <span class="acronym-letter">A</span>dvanced <span class="acronym-letter">S</span>ignals</h2><div style="margin-top: 15px; border-top: 1px solid #555; padding-top: 10px; display: flex; gap: 40px; justify-content: flex-end;"><div><span style="color: #ccc; font-size: 13px; display: block;">PILOT PROJECT</span><strong style="color: #fff; font-size: 20px;">IRUÑA-VELEIA</strong></div><div><span style="color: #ccc; font-size: 13px; display: block;">SEASON</span><strong style="color: var(--tech-blue); font-size: 20px;">UNEARTHED</strong></div><div><span style="color: #ccc; font-size: 13px; display: block;">TEAM</span><strong style="color: #FFD700; font-size: 16px; line-height: 1.1; display: block; padding-top: 2px;">NCLIC Shakespeare<br>LEGO MACHINES</strong></div></div></div>
+        </div>
+
+        <div class="slide-container slide-design">
+            <div class="rubric-bar"><div class="team-id">TECHNOLOGICAL RESEARCH</div><div class="rubric-steps"><div class="rubric-step">IDENTIFY</div><div class="rubric-step step-design">DESIGN</div><div class="rubric-step">CREATE</div><div class="rubric-step">ITERATE</div><div class="rubric-step">COMMUNICATE</div></div></div>
+            <div class="grid-bg"></div>
+            <div class="slide-content">
+                <div class="slide-title-area"><h2>SEARCHING FOR A SOLUTION</h2><div class="slide-subtitle">INVESTIGATED & DISCARDED TECHNOLOGIES</div></div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 10px;">
+                    <div class="tech-pair-container"><div class="tech-pair-header rainbow-text">RGB CAMERAS</div><div class="tech-photo-wrapper"><span class="tech-photo-label">SITE OVERVIEW</span><img src="solution/solution (1).jpg" onerror="this.src='https://placehold.co/400x250/222/666?text=RGB+Site'"></div><div class="tech-photo-wrapper"><span class="tech-photo-label">ZOOM DETAIL</span><img src="solution/solution (2).jpg" onerror="this.src='https://placehold.co/400x250/222/666?text=RGB+Zoom'"></div><p class="tech-description">Only sees surface (grass). Cannot penetrate soil.</p></div>
+                    <div class="tech-pair-container"><div class="tech-pair-header thermal-text">THERMAL CAMERAS</div><div class="tech-photo-wrapper"><span class="tech-photo-label">SITE OVERVIEW</span><img src="solution/solution (3).jpg" onerror="this.src='https://placehold.co/400x250/222/666?text=Thermal+Site'"></div><div class="tech-photo-wrapper"><span class="tech-photo-label">ZOOM DETAIL</span><img src="solution/solution (4).jpg" onerror="this.src='https://placehold.co/400x250/222/666?text=Thermal+Zoom'"></div><p class="tech-description">Detects walls by residual heat, but only very shallow.</p></div>
+                    <div class="tech-pair-container"><div class="tech-pair-header lidar-text">LASER (LIDAR)</div><div class="tech-photo-wrapper"><span class="tech-photo-label">SITE OVERVIEW</span><img src="solution/solution (5).jpg" onerror="this.src='https://placehold.co/400x250/222/666?text=Lidar+Site'"></div><div class="tech-photo-wrapper"><span class="tech-photo-label">ZOOM DETAIL</span><img src="solution/solution (6).jpg" onerror="this.src='https://placehold.co/400x250/222/666?text=Lidar+Zoom'"></div><p class="tech-description">Bounces off the ground. Excellent topography, but zero penetration.</p></div>
+                </div>
+                <div style="margin-top: 5px; background: rgba(0,0,0,0.7); padding: 15px; border: 2px solid var(--primary-gold);"><h2 class="big-impact-text">"WE NEEDED SOMETHING TO PASS THROUGH SOLID MATTER."</h2></div>
+            </div>
+        </div>
+
+        <div class="slide-container slide-design">
+            <div class="rubric-bar"><div class="team-id">SCIENTIFIC FOUNDATION</div><div class="rubric-steps"><div class="rubric-step">IDENTIFY</div><div class="rubric-step step-design">DESIGN</div><div class="rubric-step">CREATE</div><div class="rubric-step">ITERATE</div><div class="rubric-step">COMMUNICATE</div></div></div>
+            <div class="grid-bg"></div>
+            <div class="slide-content">
+                <div class="slide-title-area"><h2>THE PHYSICS OF THE INVISIBLE</h2><div class="slide-subtitle">SCIENTIFIC ADVISORY & KEY LEARNINGS</div></div>
+                <div style="display: flex; gap: 30px; height: 100%;">
+                    <div style="flex: 1.8; display: flex; flex-direction: column; gap: 40px; justify-content: center;">
+                        <div style="display: flex; gap: 30px; align-items: stretch;">
+                            <div class="expert-card" style="height: 220px; flex: 1;"><img class="expert-photo" src="science/jose_class.jpg" onerror="this.src='https://placehold.co/220x180/222/666?text=Jose+Photo'"><div class="expert-info"><strong>Jose Camporro</strong><span>Engineer AI Robotics</span><div class="expert-note">"Long waves pass through soil."</div></div></div>
+                            <div class="choice-card" style="border-color: var(--primary-gold); background: rgba(212, 175, 55, 0.1); height: 220px; flex: 1;"><h4 style="color: var(--primary-gold); margin-bottom: 5px;">CHOICE: RADIO</h4><p style="font-family: 'Kalam', cursive; font-size: 20px; color: #eee;">"Radio waves go deep."</p></div>
+                        </div>
+                        <div style="display: flex; gap: 30px; align-items: stretch;">
+                             <div class="expert-card" style="border-left-color: var(--tech-blue); height: 220px; flex: 1;"><img class="expert-photo" src="science/ekaitz_class.jpg" onerror="this.src='https://placehold.co/220x180/222/666?text=Ekaitz+Photo'"><div class="expert-info"><strong style="color: var(--tech-blue);">Ekaitz Barrasa</strong><span>Engineer at Koniker</span><div class="expert-note">"Resistivity finds stone vs dirt."</div></div></div>
+                            <div class="choice-card" style="border-color: var(--tech-blue); background: rgba(0, 210, 255, 0.1); height: 220px; flex: 1;"><h4 style="color: var(--tech-blue); margin-bottom: 5px;">ERT (TOMOGRAPHY)</h4><p style="font-family: 'Kalam', cursive; font-size: 20px; color: #eee;">"Using electricity to see."</p></div>
+                        </div>
+                    </div>
+                    <div style="flex: 1; display: flex; flex-direction: column; gap: 20px; justify-content: center;">
+                         <div class="collage-row"><div class="collage-item"><img src="science/event (1).jpg" onerror="this.src='https://placehold.co/150x200/222/666?text=Event+1'"></div><div class="collage-item"><img src="science/event (2).jpg" onerror="this.src='https://placehold.co/150x200/222/666?text=Event+2'"></div></div>
+                         <div class="collage-row"><div class="collage-item"><img src="science/event (3).jpg" onerror="this.src='https://placehold.co/150x200/222/666?text=Event+3'"></div><div class="collage-item"><img src="science/event (4).jpg" onerror="this.src='https://placehold.co/150x200/222/666?text=Event+4'"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-container slide-create" style="height: auto; min-height: 788px;">
+            <div class="rubric-bar">
+                <div class="team-id">HOW IT WORKS</div>
+                <div class="rubric-steps"><div class="rubric-step">IDENTIFY</div><div class="rubric-step">DESIGN</div><div class="rubric-step step-create">CREATE</div><div class="rubric-step">ITERATE</div><div class="rubric-step">COMMUNICATE</div></div>
+            </div>
+            <div class="grid-bg"></div>
+            <div class="slide-content" style="display: block;">
+                
+                <div class="slide-title-area">
+                    <h2>SYSTEM OVERVIEW</h2>
+                    <div class="slide-subtitle">REAL TIME SIMULATION & MINECRAFT INTEGRATION</div>
+                </div>
+                
+                <div id="simulation-wrapper" style="position: relative; width: 100%; height: 600px; border: 2px solid var(--tech-blue); margin-bottom: 50px; overflow: hidden; background: #000;">
+                    <div id="sim-startScreen">
+                        <h1>VERITAS SYSTEM</h1>
+                        <h2>SITE: IRUÑA-VELEIA</h2>
+                        <button class="sim-btn" onclick="startVeritasSimulation()">START SCAN</button>
+                    </div>
+                    <div id="sim-hud">
+                        <span class="sim-veritas-title">VERITAS SYSTEM</span><br>
+                        LOCATION: IRUÑA-VELEIA<br>
+                        OBJECTIVE: DOMUS PERIMETER<br>
+                        STATUS: <span id="sim-statusText">SCAN ACTIVE</span><br>
+                        BLOCKS FOUND: <span id="sim-targets">0</span>
+                    </div>
+                    <div id="sim-canvas-container" style="width:100%; height:100%;"></div>
+                </div>
+
+                <div class="slide-title-area">
+                    <h2>MINECRAFT</h2>
+                </div>
+                <div style="width: 100%; height: 600px; border: 4px solid var(--success-green); box-shadow: 0 0 20px rgba(0, 255, 157, 0.1); background: #000; margin-bottom: 20px;">
+                     <video src="system/minecraft_demo.mp4" controls preload="metadata" poster="system/macellum.jpg" style="width: 100%; height: 100%; object-fit: cover;"></video>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="slide-container slide-create">
+            <div class="rubric-bar"><div class="team-id">VISUAL INTELLIGENCE</div><div class="rubric-steps"><div class="rubric-step">IDENTIFY</div><div class="rubric-step">DESIGN</div><div class="rubric-step step-create">CREATE</div><div class="rubric-step">ITERATE</div><div class="rubric-step">COMMUNICATE</div></div></div>
+            <div class="grid-bg"></div>
+            <div class="slide-content">
+                <div class="slide-title-area"><h2>DEEP SCAN RESULTS</h2><div class="slide-subtitle">REAL IRUÑA-VELEIA DATA VISUALIZATION</div></div>
+                <div class="comparison-slider-container"><img src="maps/image (0).png" class="comp-img-base" onerror="this.src='https://placehold.co/1280x600/333/666?text=SATELLITE+VIEW'"><div class="comp-overlay-clipper"><img src="maps/image (1).png" class="comp-img-overlay" onerror="this.src='https://placehold.co/1280x600/000/0ff?text=SCAN+RESULT'"></div><div class="comp-label" style="right: 20px; border-color: var(--success-green); color: var(--success-green);">V.E.R.I.T.A.S. SCAN</div></div>
+            </div>
+        </div>
+
+        <div class="slide-container slide-iterate">
+            <div class="rubric-bar"><div class="team-id">ENGINEERING LOG</div><div class="rubric-steps"><div class="rubric-step">IDENTIFY</div><div class="rubric-step">DESIGN</div><div class="rubric-step">CREATE</div><div class="rubric-step step-iterate">ITERATE</div><div class="rubric-step">COMMUNICATE</div></div></div>
+            <div class="grid-bg"></div>
+            <div class="slide-content">
+                <div class="slide-title-area"><h2>MISSION LOG</h2><div class="slide-subtitle">OUR JOURNEY OF FAILING & FIXING</div></div>
+                <div class="log-container">
+                    <div class="log-card status-fail"><div class="log-icon"><i class="fa-solid fa-eye-slash" style="color: var(--alert-red);"></i></div><div class="log-info"><div class="log-title">#001: OPTICAL CAMERA + LIDAR</div><div class="log-desc">We only saw grass. The camera couldn't see underground at all.</div></div><div class="log-action" style="font-weight: bold; color: #fff;">-> ADDED GPR (RADAR)</div><div class="log-validator">Validated by: Jose</div></div>
+                    <div class="log-card status-warn"><div class="log-icon"><i class="fa-solid fa-question" style="color: orange;"></i></div><div class="log-info"><div class="log-title">#002: RADAR ONLY</div><div class="log-desc">We saw "shapes", but didn't know if they were rocks or walls.</div></div><div class="log-action" style="font-weight: bold; color: #fff;">-> ADDED ERT CABLES</div><div class="log-validator">Validated by: Ekaitz</div></div>
+                    <div class="log-card status-fail"><div class="log-icon"><i class="fa-solid fa-car-side" style="color: var(--alert-red);"></i></div><div class="log-info"><div class="log-title">#003: GROUND ROVER</div><div class="log-desc">It got stuck in the mud at Atapuerca! Also, wheels might break old bones.</div></div><div class="log-action" style="font-weight: bold; color: #fff;">-> SWITCHED TO DRONE</div><div class="log-validator">Validated by: FlyBee</div></div>
+                    <div class="log-card status-success"><div class="log-icon"><i class="fa-solid fa-cube" style="color: var(--success-green);"></i></div><div class="log-info"><div class="log-title">#004: DATA VISUALIZATION</div><div class="log-desc">Raw numerical data was difficult to understand, and structures were hidden inside dirt blocks.</div></div><div class="log-action" style="font-weight: bold; color: #fff;">-> MINECRAFT & TRANSPARENT VOXELS</div><div class="log-validator">Validated by: Arkikus</div></div>
+                </div>
+                <div class="gallery-3d-container" id="gallery3D"></div>
+            </div>
+        </div>
+
+        <div class="slide-container slide-communicate">
+            <div class="rubric-bar"><div class="team-id">EXTERNAL VALIDATION</div><div class="rubric-steps"><div class="rubric-step">IDENTIFY</div><div class="rubric-step">DESIGN</div><div class="rubric-step">CREATE</div><div class="rubric-step">ITERATE</div><div class="rubric-step step-communicate">COMMUNICATE</div></div></div>
+            <div class="grid-bg"></div>
+            <div class="slide-content">
+                <div class="slide-title-area"><h2>EXPERT APPROVAL</h2><div class="slide-subtitle">PROFESSIONALS WHO REVIEWED OUR PROJECT</div></div>
+                <div style="display: flex; gap: 30px; height: 100%;">
+                    <div class="val-card"><img src="logos/qark_logo.png" class="val-logo" onerror="this.src='https://placehold.co/300x100/fff/333?text=LOGO+QARK'"><div style="font-size:30px; font-weight:bold; color:var(--primary-gold);">QARK</div><img src="experts/expert (1).jpg" class="val-person" onerror="this.src='https://placehold.co/300x200/222/666?text=EVIDENCE+PHOTO'"><div><div class="val-name">Leandro & Blanca</div><div class="val-role">Professional Archaeologists</div></div><div class="val-quote">"They visited us, saw the prototype and want to use it!"</div></div>
+                    <div class="val-card"><img src="logos/arkikus_logo.png" class="val-logo" onerror="this.src='https://placehold.co/300x100/fff/333?text=LOGO+ARKIKUS'"><div style="font-size:30px; font-weight:bold; color:var(--tech-blue);">ARKIKUS</div><img src="experts/expert (2).jpg" class="val-person" onerror="this.src='https://placehold.co/300x200/222/666?text=EVIDENCE+PHOTO'"><div><div class="val-name">Javier Ordoño</div><div class="val-role">Virtual Reconstruction Expert</div></div><div class="val-quote">"Validated our Minecraft approach for education."</div></div>
+                    <div class="val-card"><img src="logos/gpac_logo.png" class="val-logo" onerror="this.src='https://placehold.co/300x100/fff/333?text=LOGO+GPAC'"><div style="font-size:30px; font-weight:bold; color:var(--success-green);">GPAC (UPV/EHU)</div><img src="experts/expert (3).jpg" class="val-person" onerror="this.src='https://placehold.co/300x200/222/666?text=EVIDENCE+PHOTO'"><div><div class="val-name">Amaia Mesanza</div><div class="val-role">EHU Teacher<br><span style="font-size:14px">TFM: Técnicas no destructivas aplicadas al patrimonio arqueologico</span></div></div><div class="val-quote">"I loved it, this solution is a step beyond my Master's Thesis."</div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-container slide-communicate">
+            <div class="rubric-bar"><div class="team-id">IMPACT & RESULTS</div><div class="rubric-steps"><div class="rubric-step">IDENTIFY</div><div class="rubric-step">DESIGN</div><div class="rubric-step">CREATE</div><div class="rubric-step">ITERATE</div><div class="rubric-step step-communicate">COMMUNICATE</div></div></div>
+            <div class="grid-bg"></div>
+            <div class="slide-content">
+                <div class="slide-title-area"><h2>SYSTEM COMPARISON</h2><div class="slide-subtitle">WHY V.E.R.I.T.A.S. IS BETTER</div></div>
+                <div class="impact-grid">
+                    <div class="imp-col old"><div class="imp-header" style="color: var(--alert-red);">ACTUAL WAY</div><div class="imp-step"><i class="fa-solid fa-satellite-dish imp-old-icon"></i><div><strong>LIDAR:</strong> Only sees surface shape.</div></div><div class="imp-step"><i class="fa-solid fa-car-side imp-old-icon"></i><div><strong>MAGNETOMETER:</strong> Requires heavy rover.</div></div><div class="imp-step"><i class="fa-solid fa-ban imp-old-icon"></i><div><strong>LIMITATIONS:</strong> Inaccessible terrain & Slow.</div></div></div>
+                    <div class="imp-col new"><div class="imp-header" style="color: var(--success-green);">V.E.R.I.T.A.S. WAY</div><div class="imp-step"><i class="fa-solid fa-wifi imp-new-icon"></i><div><strong>RADIO WAVES:</strong> Sees underground structures.</div></div><div class="imp-step"><i class="fa-solid fa-paper-plane imp-new-icon"></i><div><strong>DRONE + ERT:</strong> Agile & Lightweight.</div></div><div class="imp-step"><i class="fa-solid fa-check-circle imp-new-icon"></i><div><strong>ADVANTAGES:</strong> Zero damage, Any terrain.</div></div></div>
+                </div>
+                <div class="universal-app-box" style="margin-top: 20px;"><i class="fa-solid fa-graduation-cap" style="font-size: 60px; color: var(--tech-blue);"></i><div><h3 style="color: var(--tech-blue); margin-bottom: 5px; font-size: 32px;">FUTURE IMPACT</h3><p style="font-size: 24px; color: #eee; margin: 0;"><strong>1. Guide for Excavation:</strong> Archaeologists shouldn't dig without V.E.R.I.T.A.S.<br><strong>2. Education:</strong> Minecraft makes history accessible to kids.</p></div></div>
+            </div>
+        </div>
+
+        <div class="slide-container" id="cover-slide" style="border: 4px solid var(--primary-gold);">
+            <div class="grid-bg"></div>
+            <div id="polaroid-zone" style="position: absolute; inset: 0; overflow: hidden; pointer-events: none;"></div>
+            <div style="z-index: 60; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 55%; background: rgba(5,5,5,0.95); border: 2px solid rgba(255,255,255,0.1); box-shadow: 0 0 50px rgba(0,0,0,1); padding: 40px;">
+                <h1 style="font-size: 100px; margin: 0; line-height: 0.8; color: #FFD700; font-family: 'Cinzel'; letter-spacing: 5px; text-shadow: 4px 4px 0 #000;">V.E.R.I.T.A.S.</h1>
+                <h2 style="font-size: 28px; color: #fff; letter-spacing: 2px; margin-top: 15px; margin-bottom: 30px; font-family: 'Rajdhani'; line-height: 1.3;"><span class="acronym-letter">V</span>irtual <span class="acronym-letter">E</span>xcavation <span class="acronym-letter">R</span>evealing <span class="acronym-letter">I</span>nvisible <br><span class="acronym-letter">T</span>errain via <span class="acronym-letter">A</span>dvanced <span class="acronym-letter">S</span>ignals</h2>
+                <div style="border-top: 2px solid #555; margin: 20px 50px;"></div>
+                
+                <div class="team-title" style="font-size: 30px; line-height: 1.2; margin-top: 15px;">NCLIC Shakespeare<br><span style="font-size: 55px;">LEGO MACHINES</span></div>
+
+                <div style="display: flex; justify-content: center; gap: 20px; margin-top: 30px; flex-wrap: wrap;">
+                    <div id="team-names-target" style="display:contents;">
+                        <div style="display: flex; flex-direction: column; gap: 20px; justify-content: center; align-items: center; margin-top: 10px;">
+                            <div style="display: flex; flex-wrap: wrap; gap: 30px; justify-content: center;">
+                                <span class="kid-name" style="color: var(--alert-red); border: 3px dashed var(--alert-red);">Arturo</span>
+                                <span class="kid-name" style="color: var(--tech-blue); border: 3px dashed var(--tech-blue);">Rodrigo</span>
+                                <span class="kid-name" style="color: var(--success-green); border: 3px dashed var(--success-green);">Javier</span>
+                                <span class="kid-name" style="color: #db00ff; border: 3px dashed #db00ff;">Naiara</span>
+                            </div>
+                            <div style="display: flex; flex-wrap: wrap; gap: 30px; justify-content: center;">
+                                <span class="kid-name" style="color: var(--bright-gold); border: 3px dashed var(--bright-gold);">Martina</span>
+                                <span class="kid-name" style="color: #ff7f00; border: 3px dashed #ff7f00;">Xabi</span>
+                                <span class="kid-name" style="color: #fff; border: 3px dashed #fff;">Jon</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // --- SCALER LOGIC: FITS WIDTH & HEIGHT ---
+    function scaleSlides() {
+        const wrapper = document.getElementById('slides-wrapper');
+        const containerWidth = 1400; 
+        const containerHeight = 800; 
+        const availableWidth = window.innerWidth;
+        const availableHeight = window.innerHeight;
+        const scaleX = availableWidth / containerWidth;
+        const scaleY = availableHeight / containerHeight;
+        let scale = Math.min(scaleX, scaleY); 
+        document.body.style.zoom = scale; 
+        if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
+            wrapper.style.transform = `scale(${scale})`;
+            wrapper.style.marginBottom = `-${(1-scale)*100}%`;
+        }
+    }
+
+    // --- COVER LOGIC (NOW TARGETS FINAL SLIDE) ---
+    function initCover() {
+        // Updated: Using static HTML for names now, so no JS injection needed for names.
+        // 2. Polaroids Logic
+        const polaroidZone = document.getElementById('polaroid-zone');
+        // MODIFIED: total images changed to 45
+        const totalImages = 45; 
+        // MODIFIED: UPDATED FROM SPREADSHEET 001-045
+        const locationMap = {
+            1: "Visit of Arkikus", 
+            2: "Erasmus+ Bélgica", 
+            3: "Château Menthon (France)", 
+            4: "Catedral Vitoria", 
+            5: "Stonehenge (UK)", 
+            6: "Stonehenge (UK)", 
+            7: "Atapuerca", 
+            8: "Castillo Almodóvar", 
+            9: "Medina Azahara", 
+            10: "Dover Castle (UK)", 
+            11: "Atapuerca", 
+            12: "Visit of QarK", 
+            13: "Polo Garaia (Flybble)", 
+            14: "Voxel Lego Machines", 
+            15: "Toledo", 
+            16: "Visit of Arkikus", 
+            17: "Palais de l'Île (France)", 
+            18: "Boutae (France)", 
+            19: "Cusco (Perú)", 
+            20: "Castillo La Calahorra", 
+            21: "Machu Pichu (Perú)", 
+            22: "Bath (UK)", 
+            23: "Team working", 
+            24: "Arthur's Castle", 
+            25: "Visit of QarK", 
+            26: "Charla Arqueólogo Gerardo Martinez", 
+            27: "Muralla Vitoria", 
+            28: "Catedral Vitoria", 
+            29: "Casa del Cordón", 
+            30: "Castillo Alcalá de Guadaira", 
+            31: "Team working", 
+            32: "Catedral Vitoria", 
+            33: "Catedral Vitoria", 
+            34: "CAREX (Atapuerca)", 
+            35: "Vitoria Medieval", 
+            36: "Stonehenge (UK)", 
+            37: "Presentation Arqueological sites", 
+            38: "Jose Camporro", 
+            39: "Visit Expert EM", 
+            40: "Mondragon Unibertsitatea", 
+            41: "Dólmenes de Álava", 
+            42: "Visit GPAC (Amaia)", 
+            43: "Visit GPAC (Amaia)", 
+            44: "Mondragon Unibertsitatea", 
+            45: "Expert ERT"
+        };
+
+        let imageDeck = [];
+        function shuffleDeck() {
+            imageDeck = [];
+            for(let i=1; i<=totalImages; i++) imageDeck.push(i);
+            for (let i = imageDeck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [imageDeck[i], imageDeck[j]] = [imageDeck[j], imageDeck[i]];
+            }
+        }
+        shuffleDeck();
+
+        const slots = [
+            { zone: 'left', xMin: 2, xMax: 8, yMin: 5, yMax: 80 },
+            { zone: 'right', xMin: 75, xMax: 83, yMin: 5, yMax: 80 },
+            { zone: 'top', xMin: 10, xMax: 75, yMin: 0, yMax: 5 },
+            { zone: 'bottom', xMin: 10, xMax: 75, yMin: 70, yMax: 80 }
+        ];
+        let lastZone = null;
+        function getStructuredPosition() {
+            const validSlots = slots.filter(s => s.zone !== lastZone);
+            const slot = validSlots[Math.floor(Math.random() * validSlots.length)];
+            lastZone = slot.zone;
+            return { x: slot.xMin + Math.random() * (slot.xMax - slot.xMin), y: slot.yMin + Math.random() * (slot.yMax - slot.yMin) };
+        }
+
+        // --- PART A: ADD 4 CORNER STATIC PHOTOS ---
+        function addCornerPhotos() {
+            const corners = [{ x: 3, y: 3, rot: -15 }, { x: 80, y: 3, rot: 15 }, { x: 3, y: 70, rot: 10 }, { x: 80, y: 70, rot: -10 }];
+            corners.forEach(corner => {
+                if(imageDeck.length === 0) shuffleDeck();
+                const imgIdx = imageDeck.pop();
+                const num = String(imgIdx).padStart(3, '0');
+                const locText = locationMap[imgIdx] || "";
+                
+                const p = document.createElement('div');
+                p.className = 'polaroid-static'; 
+                p.innerHTML = `<img src="polaroid/${num}.jpg" onerror="this.src='https://placehold.co/240x180/222/666?text=IMG+${imgIdx}'"><div class="polaroid-text">${locText}</div>`;
+                p.style.left = corner.x + "%";
+                p.style.top = corner.y + "%";
+                p.style.setProperty('--rot', corner.rot + "deg");
+                polaroidZone.appendChild(p);
+            });
+        }
+        addCornerPhotos();
+
+        // --- PART B: DROPPING LOOP ---
+        setTimeout(() => {
+            setInterval(() => {
+                const p = document.createElement('div');
+                p.className = 'polaroid';
+                if(imageDeck.length === 0) shuffleDeck(); 
+                const imgIdx = imageDeck.pop();
+                const num = String(imgIdx).padStart(3, '0');
+                const locText = locationMap[imgIdx] || "";
+
+                p.innerHTML = `<img src="polaroid/${num}.jpg" onerror="this.src='https://placehold.co/240x180/222/666?text=IMG+${imgIdx}'"><div class="polaroid-text">${locText}</div>`;
+                const pos = getStructuredPosition();
+                const rot = (Math.random() * 60 - 30) + "deg";
+                p.style.left = pos.x + "%";
+                p.style.top = pos.y + "%";
+                p.style.setProperty('--rot', rot);
+                polaroidZone.appendChild(p);
+                if(polaroidZone.children.length > 60) polaroidZone.removeChild(polaroidZone.firstChild);
+            }, 3000); 
+        }, 1000);
+    }
+    
+    // --- 3D ROTATING GALLERY LOGIC (REDUCED TO 4 ITEMS) ---
+    function init3DGallery() {
+        const container = document.getElementById('gallery3D');
+        if (!container) return;
+        const totalItems = 4; // REDUCED TO 4
+        let currentIndex = 0;
+        const items = [];
+
+        for (let i = 1; i <= totalItems; i++) {
+            const div = document.createElement('div');
+            div.className = 'gallery-item pos-hidden'; 
+            const img = document.createElement('img');
+            img.src = `log/log (${i}).jpg`;
+            img.onerror = function() { this.src = 'https://placehold.co/400x280/222/666?text=EVIDENCE+' + i; };
+            div.appendChild(img);
+            container.appendChild(div);
+            items.push(div);
+        }
+
+        function updateGallery() {
+            items.forEach(item => item.className = 'gallery-item pos-hidden');
+            const centerIdx = currentIndex;
+            const right1 = (currentIndex + 1) % totalItems;
+            const right2 = (currentIndex + 2) % totalItems; 
+            const left1 = (currentIndex - 1 + totalItems) % totalItems;
+            const left2 = (currentIndex - 2 + totalItems) % totalItems;
+
+            items[centerIdx].className = 'gallery-item pos-center';
+            items[right1].className = 'gallery-item pos-right-1';
+            items[left1].className = 'gallery-item pos-left-1';
+            items[right2].className = 'gallery-item pos-right-2'; 
+            items[left2].className = 'gallery-item pos-left-2';
+        }
+
+        setInterval(() => {
+            currentIndex = (currentIndex + 1) % totalItems;
+            updateGallery();
+        }, 2500); 
+        updateGallery();
+    }
+
+    // --- VERITAS SIMULATION LOGIC ---
+    // Encapsulated to prevent scope pollution
+    const VeritasSim = (function() {
+        const SCENE_WIDTH = 2000; const SCENE_DEPTH = 2000; const DRONE_HEIGHT = 45; const BASE_SCAN_SPEED = 4.0; 
+        const STATES = { IDLE: -1, SCAN: 0, OVERSHOOT: 1, REVERSE: 2, LAND: 3, DRILL: 4, REPORT: 5, TAKEOFF: 6, MISSION_COMPLETE: 7 };
+        let currentState = STATES.IDLE, stateTimer = 0, detectedCount = 0, greenCount = 0, pulses = [], frameCount = 0, orbitAngle = 0, terrainRevealed = false; 
+        let scene, camera, renderer, droneGroup, droneBody, rotors = [], spikes = [], anomalies = [], mapLines = [], targetAnomaly = null, arcs = [];
+        let reportSprite = null, negativeSprite = null, surfacePlane, gridHelper, excavationPlane, gridDirection = 1; 
+        const BLOCK_SIZE = 35, Z_STEP = 32, START_Z = 200, END_Z = -200, SCAN_LIMIT_X = 180; 
+        let isChangingRow = false, detectionZTarget = 0, currentLookAt = new THREE.Vector3(0, 0, 0);
+
+        function initSim() {
+            const container = document.getElementById('sim-canvas-container');
+            if(!container) return;
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x020202); 
+            scene.fog = new THREE.Fog(0x020202, 500, 4000);
+
+            camera = new THREE.PerspectiveCamera(45, width / height, 1, 8000);
+            camera.position.set(0, 300, 400); camera.lookAt(0, 0, 0);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(width, height);
+            renderer.shadowMap.enabled = true;
+            container.appendChild(renderer.domElement);
+
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.8); scene.add(ambientLight);
+            const dirLight = new THREE.DirectionalLight(0xffffff, 1.2); dirLight.position.set(300, 800, 300); dirLight.castShadow = true; scene.add(dirLight);
+
+            gridHelper = new THREE.GridHelper(SCENE_WIDTH * 2, 200, 0x555555, 0x222222); scene.add(gridHelper);
+            const planeGeometry = new THREE.PlaneGeometry(SCENE_WIDTH * 4, SCENE_DEPTH * 4);
+            const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x050505, side: THREE.DoubleSide, transparent: true, opacity: 0.6 });
+            surfacePlane = new THREE.Mesh(planeGeometry, planeMaterial); surfacePlane.rotation.x = -Math.PI / 2; surfacePlane.position.y = -0.5; scene.add(surfacePlane);
+            
+            const excGeo = new THREE.PlaneGeometry(SCENE_WIDTH * 2, SCENE_DEPTH * 2);
+            const excMat = new THREE.MeshBasicMaterial({ color: 0x1a1a1a, side: THREE.DoubleSide });
+            excavationPlane = new THREE.Mesh(excGeo, excMat); excavationPlane.rotation.x = -Math.PI / 2; excavationPlane.position.y = -40; excavationPlane.visible = false; scene.add(excavationPlane);
+
+            buildDrone(); spawnAnomalies(); 
+            animate();
+        }
+
+        function startMission() {
+            document.getElementById('sim-startScreen').style.display = 'none';
+            document.getElementById('sim-hud').style.display = 'block';
+            currentState = STATES.SCAN;
+        }
+
+        function buildDrone() {
+            droneGroup = new THREE.Group();
+            const bodyGeo = new THREE.BoxGeometry(30, 10, 20); const bodyMat = new THREE.MeshLambertMaterial({ color: 0xCCCCCC }); 
+            droneBody = new THREE.Mesh(bodyGeo, bodyMat); droneGroup.add(droneBody);
+            const lightGeo = new THREE.SphereGeometry(3, 16, 16); const lightMat = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+            droneBody.statusLight = new THREE.Mesh(lightGeo, lightMat); droneBody.statusLight.position.set(0, 5, 8); droneGroup.add(droneBody.statusLight);
+            const armGeo = new THREE.BoxGeometry(40, 2, 2); const arm1 = new THREE.Mesh(armGeo, bodyMat); arm1.rotation.y = Math.PI / 4; droneGroup.add(arm1);
+            const arm2 = new THREE.Mesh(armGeo, bodyMat); arm2.rotation.y = -Math.PI / 4; droneGroup.add(arm2);
+            const rotorGeo = new THREE.CylinderGeometry(8, 8, 0.5, 8); const rotorMat = new THREE.MeshBasicMaterial({ color: 0xFFFFFF, transparent: true, opacity: 0.5 });
+            [{x: 14, z: 14}, {x: -14, z: -14}, {x: 14, z: -14}, {x: -14, z: 14}].forEach(pos => { const rotor = new THREE.Mesh(rotorGeo, rotorMat); rotor.position.set(pos.x, 3, pos.z); rotors.push(rotor); droneGroup.add(rotor); });
+            [-12, -4, 4, 12].forEach(x => { const spikeGeo = new THREE.CylinderGeometry(1.5, 0.5, 20, 8); spikeGeo.translate(0, -10, 0); const spikeMat = new THREE.MeshStandardMaterial({ color: 0xFFFFFF, emissive: 0x444444, metalness: 0.8, roughness: 0.2 }); const spike = new THREE.Mesh(spikeGeo, spikeMat); spike.position.set(x, -5, 0); spike.scale.set(1, 0, 1); spikes.push(spike); droneGroup.add(spike); });
+            createReportSprites(); droneGroup.position.set(-SCAN_LIMIT_X, DRONE_HEIGHT, START_Z); scene.add(droneGroup);
+        }
+
+        function createReportSprites() {
+            const canvasSuccess = document.createElement('canvas'); canvasSuccess.width = 256; canvasSuccess.height = 128; const ctxS = canvasSuccess.getContext('2d');
+            ctxS.fillStyle = 'rgba(255, 255, 255, 1.0)'; ctxS.strokeStyle = '#000'; ctxS.lineWidth = 4; ctxS.beginPath(); ctxS.moveTo(10, 10); ctxS.lineTo(246, 10); ctxS.lineTo(246, 100); ctxS.lineTo(140, 100); ctxS.lineTo(128, 120); ctxS.lineTo(116, 100); ctxS.lineTo(10, 100); ctxS.closePath(); ctxS.fill(); ctxS.stroke();
+            ctxS.fillStyle = '#444'; [[30, 20, 60, 20], [95, 20, 70, 20], [170, 20, 56, 20], [20, 45, 40, 20], [65, 45, 80, 20], [150, 45, 76, 20], [30, 70, 70, 20], [105, 70, 50, 20], [160, 70, 66, 20]].forEach(s => { ctxS.fillRect(s[0]+10, s[1], s[2], s[3]); ctxS.strokeStyle='#000'; ctxS.strokeRect(s[0]+10, s[1], s[2], s[3]); });
+            const texS = new THREE.CanvasTexture(canvasSuccess); const matS = new THREE.SpriteMaterial({ map: texS, transparent: true }); reportSprite = new THREE.Sprite(matS); reportSprite.scale.set(90, 45, 1); reportSprite.position.set(0, 55, 0); reportSprite.visible = false; droneGroup.add(reportSprite);
+            
+            const canvasNeg = document.createElement('canvas'); canvasNeg.width = 128; canvasNeg.height = 128; const ctxN = canvasNeg.getContext('2d');
+            ctxN.fillStyle = 'rgba(255, 0, 0, 1.0)'; ctxN.beginPath(); ctxN.arc(64, 64, 60, 0, Math.PI*2); ctxN.fill(); ctxN.strokeStyle = '#FFFFFF'; ctxN.lineWidth = 15; ctxN.beginPath(); ctxN.moveTo(32, 32); ctxN.lineTo(96, 96); ctxN.moveTo(96, 32); ctxN.lineTo(32, 96); ctxN.stroke();
+            const texN = new THREE.CanvasTexture(canvasNeg); const matN = new THREE.SpriteMaterial({ map: texN, transparent: true }); negativeSprite = new THREE.Sprite(matN); negativeSprite.scale.set(30, 30, 1); negativeSprite.position.set(0, 40, 0); negativeSprite.visible = false; droneGroup.add(negativeSprite);
+        }
+
+        function spawnAnomalies() {
+            const geo = new THREE.BoxGeometry(32, 25, 32); const matHidden = new THREE.MeshBasicMaterial({ color: 0x444444, wireframe: true, transparent: true, opacity: 0.4 }); const matStoneCity = new THREE.MeshLambertMaterial({ color: 0x777777 }); const depthY = -28; 
+            [{x: -160, z: 120}, {x: 160, z: 100}, {x: 0, z: 160}, {x: -100, z: -160}].forEach(pos => { const mesh = new THREE.Mesh(geo, matHidden.clone()); mesh.position.set(pos.x, depthY, pos.z); mesh.visible = false; mesh.userData = { detected: false, isTarget: true, isFalsePositive: true }; anomalies.push(mesh); scene.add(mesh); });
+            const houseSizeX = 2; const houseSizeZ = 3; 
+            for (let x = -houseSizeX; x <= houseSizeX; x++) { for (let z = -houseSizeZ; z <= houseSizeZ; z++) { if (x === -houseSizeX || x === houseSizeX || z === -houseSizeZ || z === houseSizeZ) { if (z === houseSizeZ && Math.abs(x) < 2) continue; if (x === -houseSizeX && z === -1) continue; if (x === houseSizeX && z === 1) continue; if (z === -houseSizeZ && x === 1) continue; const zPos = (z * BLOCK_SIZE) - 20; const mesh = new THREE.Mesh(geo, matHidden.clone()); mesh.position.set(x * BLOCK_SIZE, depthY, zPos); mesh.visible = false; mesh.userData = { detected: false, isTarget: true, isFalsePositive: false }; anomalies.push(mesh); scene.add(mesh); } } }
+            spawnRomanCity(matStoneCity, depthY);
+        }
+
+        function spawnRomanCity(material, yLevel) {
+            function createBlock(x, z, w, d, h=20, type="block") { const geo = new THREE.BoxGeometry(w, h, d); const mesh = new THREE.Mesh(geo, material.clone()); mesh.position.set(x, yLevel, z); mesh.visible = false; mesh.userData = { buildingType: type, variant: Math.floor(Math.random() * 3) }; mapLines.push(mesh); scene.add(mesh); }
+            const blockSize = 120; const streetWidth = 30; const gridRange = 3; 
+            for (let ix = -gridRange; ix <= gridRange; ix++) { for (let iz = -gridRange; iz <= gridRange; iz++) { if (Math.abs(ix) <= 1 && Math.abs(iz) <= 1) continue; if (Math.abs(ix) === gridRange && Math.abs(iz) === gridRange) continue; const centerX = ix * (blockSize + streetWidth); const centerZ = iz * (blockSize + streetWidth); if (centerZ < -550) continue; const rnd = Math.random(); if (rnd > 0.7) { const wallThick = 20; createBlock(centerX, centerZ - 40, 100, wallThick, 25); createBlock(centerX, centerZ + 40, 100, wallThick, 25); createBlock(centerX + 40, centerZ, wallThick, 60, 25); createBlock(centerX - 40, centerZ, wallThick, 60, 25); } else if (rnd > 0.4) { const h = 20 + Math.random() * 15; createBlock(centerX, centerZ, 90, 90, h); } else if (rnd > 0.2) { for(let p = -2; p <= 2; p++) { createBlock(centerX + (p*20), centerZ, 8, 8, 30, "pillar"); createBlock(centerX + (p*20), centerZ + 30, 8, 8, 30, "pillar"); } } else { createBlock(centerX, centerZ, 100, 100, 5); } } }
+            const wallSegments = 80; const baseRadius = 800; for(let i=0; i<wallSegments; i++) { const theta = (i / wallSegments) * Math.PI * 2; const zComp = Math.sin(theta); if (zComp < -0.2) { const noise = Math.sin(theta * 10) * 80 + Math.cos(theta * 4) * 150; const currentRadius = baseRadius + noise; const wx = Math.cos(theta) * currentRadius; const wz = Math.sin(theta) * currentRadius; const rot = -theta + (Math.cos(theta * 10) * 0.2); const geo = new THREE.BoxGeometry(25, 50, 80); const mesh = new THREE.Mesh(geo, material.clone()); mesh.position.set(wx, yLevel + 10, wz); mesh.rotation.y = rot; mesh.visible = false; mesh.userData = { variant: 0 }; mapLines.push(mesh); scene.add(mesh); } }
+        }
+
+        function createPulse(type, position) {
+            let geo; if (type === 'TX') { geo = new THREE.SphereGeometry(1, 32, 16, 0, Math.PI * 2, 0, Math.PI * 0.5); geo.rotateX(Math.PI); } else { geo = new THREE.SphereGeometry(1, 32, 16); }
+            const color = type === 'TX' ? 0x00ffff : 0xff0000; const mat = new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: 0.8, wireframe: true }); const mesh = new THREE.Mesh(geo, mat); mesh.position.copy(position); if (type === 'TX') { mesh.position.y = position.y - 5; } else { mesh.position.y = position.y; } mesh.userData = { type: type, age: 0, maxAge: 60, speed: type === 'TX' ? 0.8 : 1.5 }; scene.add(mesh); pulses.push(mesh);
+        }
+
+        function checkDetection() {
+            if (currentState !== STATES.SCAN) return; const threshold = 30; 
+            for (let anomaly of anomalies) { if (anomaly.userData.detected) continue; const dx = droneGroup.position.x - anomaly.position.x; const dz = droneGroup.position.z - anomaly.position.z; const dist = Math.sqrt(dx*dx + dz*dz); if (dist < threshold) { targetAnomaly = anomaly; anomaly.userData.detected = true; anomaly.visible = true; anomaly.material.color.setHex(0xB22222); anomaly.material.wireframe = false; anomaly.material.opacity = 0.9; anomaly.material.transparent = true; currentState = STATES.OVERSHOOT; stateTimer = 15; createPulse('RX', anomaly.position); droneBody.statusLight.material.color.setHex(0xFF8800); break; } }
+        }
+
+        function drawElectricArcs() {
+            arcs.forEach(line => droneGroup.remove(line)); arcs = [];
+            if (currentState === STATES.DRILL && targetAnomaly) { spikes.forEach(spike => { const startPos = spike.position.clone(); startPos.y -= 15; const targetPos = droneGroup.worldToLocal(targetAnomaly.position.clone()); const points = []; points.push(startPos); const segments = 6; for(let i=1; i<segments; i++) { const t = i / segments; const p = new THREE.Vector3().lerpVectors(startPos, targetPos, t); p.x += (Math.random() - 0.5) * 8; p.y += (Math.random() - 0.5) * 8; p.z += (Math.random() - 0.5) * 8; points.push(p); } points.push(targetPos); for(let k=0; k<3; k++) { const offsetPoints = points.map(v => new THREE.Vector3(v.x + (Math.random()-0.5), v.y + (Math.random()-0.5), v.z + (Math.random()-0.5))); const geo = new THREE.BufferGeometry().setFromPoints(offsetPoints); const mat = new THREE.LineBasicMaterial({ color: 0x00FFFF, opacity: 1.0, transparent: false }); const line = new THREE.Line(geo, mat); droneGroup.add(line); arcs.push(line); } }); }
+        }
+
+        function updateFSM() {
+            if (currentState === STATES.IDLE) return;
+            if (currentState === STATES.SCAN) { let currentSpeed = BASE_SCAN_SPEED; if (detectedCount < 2) { currentSpeed = BASE_SCAN_SPEED * 0.4; } else if (detectedCount >= 8) { currentSpeed = BASE_SCAN_SPEED * 1.3; } const limitX = SCAN_LIMIT_X; if (!isChangingRow) { droneGroup.position.x += currentSpeed * gridDirection; if ((gridDirection === 1 && droneGroup.position.x > limitX) || (gridDirection === -1 && droneGroup.position.x < -limitX)) { if (droneGroup.position.z > END_Z) { isChangingRow = true; detectionZTarget = droneGroup.position.z - Z_STEP; } else { currentState = STATES.TAKEOFF; } } } else { droneGroup.position.z -= currentSpeed; if (droneGroup.position.z <= detectionZTarget) { isChangingRow = false; gridDirection *= -1; } } droneGroup.rotation.z = THREE.MathUtils.lerp(droneGroup.rotation.z, -gridDirection * 0.1 * (isChangingRow ? 0 : 1), 0.1); }
+            switch(currentState) {
+                case STATES.OVERSHOOT: droneGroup.position.x += BASE_SCAN_SPEED * gridDirection * 0.5; stateTimer--; if(stateTimer <= 0) currentState = STATES.REVERSE; break;
+                case STATES.REVERSE: const tx = targetAnomaly.position.x; const tz = targetAnomaly.position.z; droneGroup.position.x += (tx - droneGroup.position.x) * 0.1; droneGroup.position.z += (tz - droneGroup.position.z) * 0.1; if(Math.abs(droneGroup.position.x - tx) < 1 && Math.abs(droneGroup.position.z - tz) < 1) { currentState = STATES.LAND; } break;
+                case STATES.LAND: if(droneGroup.position.y > 20) droneGroup.position.y -= 2.0; else { currentState = STATES.DRILL; stateTimer = 60; } break;
+                case STATES.DRILL: spikes.forEach(s => { if(s.scale.y < 0.7) s.scale.y += 0.05; }); droneGroup.position.x += (Math.random() - 0.5); drawElectricArcs(); stateTimer--; if(stateTimer <= 0) { if (targetAnomaly.userData.isFalsePositive) { targetAnomaly.material.color.setHex(0xB22222); targetAnomaly.material.transparent = false; targetAnomaly.material.opacity = 1.0; droneBody.statusLight.material.color.setHex(0xB22222); document.getElementById('sim-statusText').innerText = "ANOMALY DISCARDED"; document.getElementById('sim-statusText').style.color = "#FF0000"; negativeSprite.visible = true; } else { targetAnomaly.material.color.setHex(0x228B22); targetAnomaly.material.transparent = false; targetAnomaly.material.opacity = 1.0; droneBody.statusLight.material.color.setHex(0x228B22); detectedCount++; greenCount++; document.getElementById('sim-targets').innerText = greenCount; document.getElementById('sim-statusText').innerText = "TARGET CONFIRMED"; document.getElementById('sim-statusText').style.color = "#00FF00"; reportSprite.visible = true; } currentState = STATES.REPORT; stateTimer = 45; arcs.forEach(line => droneGroup.remove(line)); arcs = []; } break;
+                case STATES.REPORT: spikes.forEach(s => { if(s.scale.y > 0) s.scale.y -= 0.1; }); stateTimer--; if(stateTimer <= 0) { reportSprite.visible = false; negativeSprite.visible = false; document.getElementById('sim-statusText').innerText = "SCAN ACTIVE"; document.getElementById('sim-statusText').style.color = "#fff"; currentState = STATES.TAKEOFF; } break;
+                case STATES.TAKEOFF: if(droneGroup.position.y < DRONE_HEIGHT) droneGroup.position.y += 1.5; else { if (droneGroup.position.z <= END_Z) { currentState = STATES.MISSION_COMPLETE; setupMissionComplete(); } else { currentState = STATES.SCAN; targetAnomaly = null; droneBody.statusLight.material.color.setHex(0x00ff00); } } break;
+                case STATES.MISSION_COMPLETE: droneGroup.position.x = 0; droneGroup.position.z = 0; droneGroup.position.y = 400; droneGroup.rotation.y += 0.01; droneGroup.rotation.z = 0; break;
+            }
+        }
+
+        function setupMissionComplete() { document.getElementById('sim-statusText').innerText = "MAPPING COMPLETE. AERIAL VIEW."; document.getElementById('sim-statusText').style.color = "#FFFF00"; mapLines.forEach(line => { line.visible = true; }); anomalies.forEach(a => { if(a.userData.detected) { a.scale.y = 1.5; a.position.y += 5; } }); }
+
+        function animate() {
+            frameCount++; requestAnimationFrame(animate);
+            rotors.forEach(r => r.rotation.y += 0.8);
+            if(currentState === STATES.SCAN && frameCount % 5 === 0) { createPulse('TX', droneGroup.position); }
+            for (let i = pulses.length - 1; i >= 0; i--) { let p = pulses[i]; p.userData.age++; const scale = 1 + (p.userData.age * p.userData.speed * 0.2); p.scale.set(scale, scale, scale); p.material.opacity = 1 - (p.userData.age / p.userData.maxAge); if (p.userData.type === 'TX') { p.position.y -= 1.0; } if (p.userData.age >= p.userData.maxAge) { scene.remove(p); pulses.splice(i, 1); } }
+            checkDetection(); updateFSM();
+
+            let targetCamPos = new THREE.Vector3(0, 300, 400); let targetLookAt = new THREE.Vector3(0, 0, 0);
+            if (currentState === STATES.MISSION_COMPLETE) { orbitAngle += 0.003; targetCamPos.y = 900; const radius = 900; targetCamPos.x = Math.sin(orbitAngle) * radius; targetCamPos.z = Math.cos(orbitAngle) * radius; camera.position.lerp(targetCamPos, 0.02); camera.lookAt(0, 0, 0); if (orbitAngle > Math.PI && !terrainRevealed) { terrainRevealed = true; surfacePlane.visible = false; gridHelper.visible = false; excavationPlane.visible = true; excavationPlane.material.color.setHex(0x222222); document.getElementById('sim-statusText').innerText = "SURFACE LAYER REMOVED"; anomalies.forEach(a => { if (a.userData.detected) { a.material.opacity = 0.9; if (a.userData.isFalsePositive) { a.material.color.setHex(0x8B4513); } else { a.material.color.setHex(0x556B2F); } } }); mapLines.forEach(line => { const variant = line.userData.variant; if (variant === 0) line.material.color.setHex(0x333333); else if (variant === 1) line.material.color.setHex(0x444444); else line.material.color.setHex(0x555555); }); } } else { if (detectedCount < 2) { if (currentState === STATES.LAND || currentState === STATES.DRILL || currentState === STATES.REPORT) { targetCamPos = droneGroup.position.clone().add(new THREE.Vector3(80, 80, 80)); targetLookAt = droneGroup.position.clone(); } } camera.position.lerp(targetCamPos, 0.015); currentLookAt.lerp(targetLookAt, 0.05); camera.lookAt(currentLookAt); }
+            renderer.render(scene, camera);
+        }
+
+        return { init: initSim, start: startMission };
+    })();
+
+    // EXPOSE GLOBAL FUNCTION FOR BUTTON
+    window.startVeritasSimulation = function() {
+        VeritasSim.start();
+    };
+
+    window.addEventListener('resize', scaleSlides);
+    window.addEventListener('load', () => {
+        scaleSlides();
+        initCover();
+        init3DGallery();
+        
+        // Init Sim slightly delayed to ensure DOM is ready
+        setTimeout(() => { VeritasSim.init(); }, 10);
+    });
+</script>
+
+</body>
+</html>
